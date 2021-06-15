@@ -1,0 +1,24 @@
+    // Concatenation
+    // Slicing / submatrix selection
+    // Matrix-vector product (fast)
+    // Generalized matrix multiplication
+    // Inner product
+    // Dot product
+    // Outer product
+    // "Quadratic" matrix vector product? B = x_T A x
+
+    // 2-Norm
+    // p-norm, 1-norm, inf-norm
+    // Conditioning number
+    // QR-factorization (Householder, Golub-Kahan)
+    // linsolve (by QR?)
+    // Inversion
+    // Cholesky factorization
+    // Jacobian
+    // Hessian
+    // LU factorization
+    // Eigenvalue algorithms
+    // SVD
+    // Various least squares methods
+
+    // Separate arduino tools
