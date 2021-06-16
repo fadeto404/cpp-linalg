@@ -2,8 +2,8 @@
 // Created by rns on 6/13/21.
 //
 
-#ifndef CPP_LINALG_MATRIX_H
-#define CPP_LINALG_MATRIX_H
+#ifndef CPP_LINALG_CLA_MATRIX_CORE_H
+#define CPP_LINALG_CLA_MATRIX_CORE_H
 
 #include "mem_blocks.h"
 
@@ -22,71 +22,79 @@ namespace cla
         // TODO: Constructor given array formatted data
 
         // Assignment
-        Matrix<n, m, memBlockType>& operator = (const Matrix<n, m, memBlockType>& mat);
-        Matrix<n, m, memBlockType>& operator = (typename memBlockType::elementType data_array[n][m]);
-        Matrix<n, m, memBlockType>& operator = (const typename memBlockType::elementType& value);
+        Matrix<n, m, memBlockType>& operator =(const Matrix<n, m, memBlockType>& mat);
+        Matrix<n, m, memBlockType>& operator =(typename memBlockType::element_type data_array[n][m]);
+        Matrix<n, m, memBlockType>& operator =(const typename memBlockType::element_type & value);
 
         // Dimensions
-        static int getNumRows() const;
-        static int getNumCols() const;
-        static int getNumElements() const;
+        static const int getNumRows();
+        static const int getNumCols();
+        static const int getNumElements();
 
         // Element access
-        memBlockType::elementType& operator () (int i, int j) const;
+        typename memBlockType::element_type & operator ()(int i, int j) const;
 
         // Matrix addition
-        Matrix<n, m, memBlockType>& operator + (const Matrix<n, m, memBlockType>& mat) const;
-        Matrix<n, m, memBlockType>& operator += (const Matrix<n, m, memBlockType>& mat);
+        template<class otherMemBlockType>
+        Matrix<n, m, memBlockType> operator +(const Matrix<n, m, otherMemBlockType>& mat) const;
+
+        template<class otherMemBlockType>
+        Matrix<n, m, memBlockType>& operator +=(const Matrix<n, m, otherMemBlockType>& mat);
 
         // Matrix subtraction
-        Matrix<n, m, memBlockType>& operator - (const Matrix<n, m, memBlockType>& mat) const;
-        Matrix<n, m, memBlockType>& operator -= (const Matrix<n, m, memBlockType>& mat);
+        template<class otherMemBlockType>
+        Matrix<n, m, memBlockType> operator -(const Matrix<n, m, otherMemBlockType>& mat) const;
+
+        template<class otherMemBlockType>
+        Matrix<n, m, memBlockType>& operator -=(const Matrix<n, m, otherMemBlockType>& mat);
 
         // Negation
-        Matrix<n, m, memBlockType>& operator - () const;
+        Matrix<n, m, memBlockType>& operator -() const;
 
         // Matrix multiplication
         template<int p, class otherMemBlockType>
-        Matrix<n, m, memBlockType>& operator * (const Matrix<m, p, otherMemBlockType>& mat) const;
+        Matrix<n, p, DenseMatrixBlock<n, p, typename memBlockType::element_type> > operator *(const Matrix<m, p, otherMemBlockType>& mat) const;
 
         // Only for square matrices (n == m) (n x m multiplied by m x p yields n x p)
         template<class otherMemBlockType>
-        Matrix<n, n, memBlockType>& operator *= (const Matrix<n, n, otherMemBlockType>& mat);
+        Matrix<n, n, memBlockType>& operator *=(const Matrix<n, n, otherMemBlockType>& mat);
 
         // Scalar operations
-        Matrix<n, m, memBlockType>& operator + (const typename memBlockType::elementType& scalar) const;
-        Matrix<n, m, memBlockType>& operator - (const typename memBlockType::elementType& scalar) const;
-        Matrix<n, m, memBlockType>& operator * (const typename memBlockType::elementType& scalar) const;
-        Matrix<n, m, memBlockType>& operator / (const typename memBlockType::elementType& scalar) const;
-        Matrix<n, m, memBlockType>& operator += (const typename memBlockType::elementType& scalar);
-        Matrix<n, m, memBlockType>& operator -= (const typename memBlockType::elementType& scalar);
-        Matrix<n, m, memBlockType>& operator *= (const typename memBlockType::elementType& scalar);
-        Matrix<n, m, memBlockType>& operator /= (const typename memBlockType::elementType& scalar);
+        Matrix<n, m, memBlockType>& operator +(const typename memBlockType::element_type & scalar) const;
+        Matrix<n, m, memBlockType>& operator -(const typename memBlockType::element_type & scalar) const;
+        Matrix<n, m, memBlockType>& operator *(const typename memBlockType::element_type & scalar) const;
+        Matrix<n, m, memBlockType>& operator /(const typename memBlockType::element_type & scalar) const;
+        Matrix<n, m, memBlockType>& operator +=(const typename memBlockType::element_type & scalar);
+        Matrix<n, m, memBlockType>& operator -=(const typename memBlockType::element_type & scalar);
+        Matrix<n, m, memBlockType>& operator *=(const typename memBlockType::element_type & scalar);
+        Matrix<n, m, memBlockType>& operator /=(const typename memBlockType::element_type & scalar);
 
+        // Transpose
+        // TODO: Implement transposition
     };
 
     // DIMENSIONS
     template<int n, int m, class memBlockType>
-    int Matrix<n, m, memBlockType>::getNumRows() const
+    const int Matrix<n, m, memBlockType>::getNumRows()
     {
         return rows;
     }
 
     template<int n, int m, class memBlockType>
-    int Matrix<n, m, memBlockType>::getNumCols() const
+    const int Matrix<n, m, memBlockType>::getNumCols()
     {
         return cols;
     }
 
     template<int n, int m, class memBlockType>
-    int Matrix<n, m, memBlockType>::getNumElements() const
+    const int Matrix<n, m, memBlockType>::getNumElements()
     {
         return rows*cols;
     }
 
     // ASSIGNMENT
     template<int n, int m, class memBlockType>
-    Matrix<n, m, memBlockType> &Matrix<n, m, memBlockType>::operator =(typename memBlockType::elementType data_array[n][m])
+    Matrix<n, m, memBlockType> &Matrix<n, m, memBlockType>::operator =(typename memBlockType::element_type data_array[n][m])
     {
         for (int i = 0; i < n; ++i)
         {
@@ -95,10 +103,11 @@ namespace cla
                 elements(i, j) = data_array[i][j];
             }
         }
+        return (*this);
     }
 
     template<int n, int m, class memBlockType>
-    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator =(const typename memBlockType::elementType &value)
+    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator =(const typename memBlockType::element_type &value)
     {
         for (int i = 0; i < n; ++i)
         {
@@ -107,6 +116,7 @@ namespace cla
                 elements(i, j) = value;
             }
         }
+        return (*this);
     }
 
     template<int n, int m, class memBlockType>
@@ -116,29 +126,32 @@ namespace cla
         {
             for (int j = 0; j < m; ++j)
             {
-                elements(i, j) = mat(i, j);
+                (*this)(i, j) = mat(i, j);
             }
         }
+        return (*this);
     }
 
     // ELEMENT ACCESS
     template<int n, int m, class memBlockType>
-    inline memBlockType::elementType& Matrix<n, m, memBlockType>::operator()(int i, int j) const
+    inline typename memBlockType::element_type& Matrix<n, m, memBlockType>::operator()(int i, int j) const
     {
         return elements(i, j);
     }
 
     /////////////////////////////// MATRIX ARITHMETIC OPERATIONS ///////////////////////////////
     // MATRIX ADDITION
-    template<int n, int m, class memBlockType, class otherMemBlockType>
-    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator +(const Matrix<n, m, otherMemBlockType> &mat) const
+    template<int n, int m, class memBlockType>
+    template<class otherMemBlockType>
+    Matrix<n, m, memBlockType> Matrix<n, m, memBlockType>::operator +(const Matrix<n, m, otherMemBlockType> &mat) const
     {
         Matrix<n, m, memBlockType> res;
         add((*this), mat, res);
         return res;
     }
 
-    template<int n, int m, class memBlockType, class otherMemBlockType>
+    template<int n, int m, class memBlockType>
+    template<class otherMemBlockType>
     Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator +=(const Matrix<n, m, otherMemBlockType> &mat)
     {
         add((*this), mat, (*this));
@@ -148,7 +161,7 @@ namespace cla
     template<int n, int m, class memBlockType, class otherMemBlockType, class resultMemBlockType>
     Matrix<n, m, resultMemBlockType>& add(const Matrix<n, m, memBlockType> &A,
                                     const Matrix<n, m, otherMemBlockType> &B,
-                                    const Matrix<n, m, resultMemBlockType> &C)
+                                    Matrix<n, m, resultMemBlockType> &C)
     {
         for (int i = 0; i < n; ++i)
         {
@@ -162,15 +175,17 @@ namespace cla
 
 
     // MATRIX SUBTRACTION
-    template<int n, int m, class memBlockType, class otherMemBlockType>
-    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator -(const Matrix<n, m, otherMemBlockType> &mat) const
+    template<int n, int m, class memBlockType>
+    template<class otherMemBlockType>
+    Matrix<n, m, memBlockType> Matrix<n, m, memBlockType>::operator -(const Matrix<n, m, otherMemBlockType> &mat) const
     {
         Matrix<n, m, memBlockType> res;
         subtract((*this), mat, res);
         return res;
     }
 
-    template<int n, int m, class memBlockType, class otherMemBlockType>
+    template<int n, int m, class memBlockType>
+    template<class otherMemBlockType>
     Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator -=(const Matrix<n, m, otherMemBlockType> &mat)
     {
         subtract((*this), mat, (*this));
@@ -180,7 +195,7 @@ namespace cla
     template<int n, int m, class memBlockType, class otherMemBlockType, class resultMemBlockType>
     Matrix<n, m, resultMemBlockType>& subtract(const Matrix<n, m, memBlockType> &A,
                                     const Matrix<n, m, otherMemBlockType> &B,
-                                    const Matrix<n, m, resultMemBlockType> &C)
+                                    Matrix<n, m, resultMemBlockType> &C)
     {
         for (int i = 0; i < n; ++i)
         {
@@ -209,9 +224,9 @@ namespace cla
     // MATRIX MULTIPLICATION
     template<int n, int m, class memBlockType>  // Template for the left side matrix
     template<int p, class otherMemBlockType>    // Template for the right side matrix
-    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator *(const Matrix<m, p, otherMemBlockType> &mat) const
+    Matrix<n, p, DenseMatrixBlock<n, p, typename memBlockType::element_type> > Matrix<n, m, memBlockType>::operator *(const Matrix<m, p, otherMemBlockType> &mat) const
     {
-        Matrix<n, p, memBlockType> res;
+        Matrix<n, p, DenseMatrixBlock<n, p, typename memBlockType::element_type> > res;
         multiply((*this), mat, res);
         return res;
     }
@@ -227,9 +242,9 @@ namespace cla
     }
 
     template<int n, int m, int p, class memBlockType, class otherMemBlockType, class resultMemBlockType>
-    Matrix<n, m, resultMemBlockType>& multiply(const Matrix<n, m, memBlockType> &A,
-                                         const Matrix<n, m, otherMemBlockType> &B,
-                                         const Matrix<n, m, resultMemBlockType> &C)
+    Matrix<n, p, resultMemBlockType>& multiply(const Matrix<n, m, memBlockType> &A,
+                                         const Matrix<m, p, otherMemBlockType> &B,
+                                         Matrix<n, p, resultMemBlockType> &C)
     {
         for (int i = 0; i < n; ++i)
         {
@@ -249,7 +264,7 @@ namespace cla
     /////////////////////////////// MATRIX-SCALAR OPERATIONS ///////////////////////////////
     // MATRIX-SCALAR ADDITION
     template<int n, int m, class memBlockType>
-    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator +(const elementType &scalar) const
+    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator +(const typename memBlockType::element_type &scalar) const
     {
         Matrix<n, m, memBlockType> res;
         add((*this), scalar, res);
@@ -257,7 +272,7 @@ namespace cla
     }
 
     template<int n, int m, class memBlockType>
-    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator +=(const elementType &scalar)
+    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator +=(const typename memBlockType::element_type &scalar)
     {
         add((*this), scalar, (*this));
         return (*this);
@@ -265,7 +280,7 @@ namespace cla
 
     template<int n, int m, class memBlockType>
     Matrix<n, m , memBlockType>& add(Matrix<n, m, memBlockType> &mat,
-                                     const elementType &scalar,
+                                     const typename memBlockType::element_type &scalar,
                                      Matrix<n, m, memBlockType> &ret_mat)
     {
         for (int i = 0; i < n; ++i)
@@ -280,7 +295,7 @@ namespace cla
 
     // MATRIX-SCALAR SUBTRACTION
     template<int n, int m, class memBlockType>
-    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator -(const elementType &scalar) const
+    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator -(const typename memBlockType::element_type &scalar) const
     {
         Matrix<n, m, memBlockType> res;
         subtract((*this), scalar, res);
@@ -288,7 +303,7 @@ namespace cla
     }
 
     template<int n, int m, class memBlockType>
-    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator -=(const elementType &scalar)
+    Matrix<n, m, memBlockType>& Matrix<n, m, memBlockType>::operator -=(const typename memBlockType::element_type &scalar)
     {
         subtract((*this), scalar, (*this));
         return (*this);
@@ -296,7 +311,7 @@ namespace cla
 
     template<int n, int m, class memBlockType>
     Matrix<n, m , memBlockType>& subtract(Matrix<n, m, memBlockType> &mat,
-                                          const elementType &scalar,
+                                          const typename memBlockType::element_type &scalar,
                                           Matrix<n, m, memBlockType> &ret_mat)
     {
         for (int i = 0; i < n; ++i)
@@ -311,7 +326,7 @@ namespace cla
 
     // MATRIX-SCALAR MULTIPLICATION
     template<int n, int m, class memBlockType>
-    Matrix<n, m, memBlockType> &Matrix<n, m, memBlockType>::operator *(const elementType &scalar) const
+    Matrix<n, m, memBlockType> &Matrix<n, m, memBlockType>::operator *(const typename memBlockType::element_type &scalar) const
     {
         Matrix<n, m, memBlockType> res;
         multiply((*this), scalar, res);
@@ -319,14 +334,15 @@ namespace cla
     }
 
     template<int n, int m, class memBlockType>
-    Matrix<n, m, memBlockType> &Matrix<n, m, memBlockType>::operator *=(const elementType &scalar)
+    Matrix<n, m, memBlockType> &Matrix<n, m, memBlockType>::operator *=(const typename memBlockType::element_type &scalar)
     {
         multiply((*this), scalar, (*this));
         return (*this);
     }
 
+    template<int n, int m, class memBlockType>
     Matrix<n, m, memBlockType>& multiply(Matrix<n, m, memBlockType> &mat,
-                                         const elementType &scalar,
+                                         const typename memBlockType::element_type &scalar,
                                          Matrix<n, m, memBlockType> &ret_mat)
     {
         for (int i = 0; i < n; ++i)
@@ -341,7 +357,7 @@ namespace cla
 
     // MATRIX-SCALAR DIVISION (ELEMENTWISE DIVISION)
     template<int n, int m, class memBlockType>
-    Matrix<n, m, memBlockType> &Matrix<n, m, memBlockType>::operator /(const elementType &scalar) const
+    Matrix<n, m, memBlockType> &Matrix<n, m, memBlockType>::operator /(const typename memBlockType::element_type &scalar) const
     {
         Matrix<n, m, memBlockType> res;
         divide((*this), scalar, res);
@@ -349,14 +365,15 @@ namespace cla
     }
 
     template<int n, int m, class memBlockType>
-    Matrix<n, m, memBlockType> &Matrix<n, m, memBlockType>::operator /=(const elementType &scalar)
+    Matrix<n, m, memBlockType> &Matrix<n, m, memBlockType>::operator /=(const typename memBlockType::element_type &scalar)
     {
         divide((*this), scalar, (*this));
         return (*this);
     }
 
+    template<int n, int m, class memBlockType>
     Matrix<n, m, memBlockType>& divide(Matrix<n, m, memBlockType> &mat,
-                                         const elementType &scalar,
+                                         const typename memBlockType::element_type &scalar,
                                          Matrix<n, m, memBlockType> &ret_mat)
     {
         for (int i = 0; i < n; ++i)
@@ -370,4 +387,4 @@ namespace cla
     }
 }
 
-#endif //CPP_LINALG_MATRIX_H
+#endif //CPP_LINALG_CLA_MATRIX_CORE_H

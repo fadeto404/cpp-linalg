@@ -11,10 +11,10 @@ namespace cla
     template<int n, int m, class elementType>
     struct DenseMatrixBlock
     {
-        typedef elementType elementType;
-        elementType mem_block[n*m];
+        typedef elementType element_type;
+        mutable elementType mem_block[n*m];
 
-        inline elementType& operator ()(int i, int j)
+        inline elementType& operator ()(int i, int j) const
         {
             return mem_block[i * m + j];
         }
@@ -32,14 +32,14 @@ namespace cla
         // TODO: Read about copy constructors
         TransposeBlock(const TransposeBlock<MatrixType>& mat) : original(mat.original){};
 
-        inline elementType& operator ()(int i, int j)
+        inline typename MatrixType::elements::elementType& operator ()(int i, int j)
         {
             return original(j, i);
         }
     };
 
     // TODO: Test
-    template <int n, int m, int elementType>
+    template <int n, int m, class elementType>
     struct Zero
     {
         static elementType elem = 0;
