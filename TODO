@@ -7,7 +7,6 @@
     // Outer product
     // "Quadratic" matrix vector product? B = x_T A x
 
-    // 2-Norm
     // p-norm, 1-norm, inf-norm
     // Conditioning number
     // QR-factorization (Householder, Golub-Kahan)
