@@ -13,6 +13,7 @@
     // QR-factorization (Householder, Golub-Kahan)
     // linsolve (by QR?)
     // Inversion
+    // Pseudoinverse
     // Cholesky factorization
     // Jacobian
     // Hessian
