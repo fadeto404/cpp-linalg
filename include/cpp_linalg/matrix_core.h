@@ -385,6 +385,34 @@ namespace cla
         }
         return mat;
     }
+
+    // EXTRA FUNCTIONS
+    template<int n, class memBlockType, class otherMemBlockType = memBlockType>
+    Matrix<n, 1, memBlockType>& saxpy(Matrix<n, 1, memBlockType> &y,
+                                     typename memBlockType::element_type a,
+                                     Matrix<n, 1, otherMemBlockType> &x)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            y(i,0) += a*x(i,0);
+        }
+        return y;
+    }
+
+    template<int n, int m, class memBlockType, class scalingMemBlockType, class otherMemBlockType>
+    Matrix<n, m, memBlockType>& gaxpy(Matrix<n, 1, memBlockType> &y,
+                                      Matrix<m, n, scalingMemBlockType> &A,
+                                      Matrix<m, 1, otherMemBlockType> &x)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < m; ++j)
+            {
+                y(i,0) += A(i, j) * x(j,0);
+            }
+        }
+        return y;
+    }
 }
 
 #endif //CPP_LINALG_CLA_MATRIX_CORE_H
