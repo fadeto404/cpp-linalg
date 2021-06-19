@@ -12,11 +12,13 @@ namespace cla
     struct DenseMatrixBlock
     {
         typedef elementType element_type;
-        mutable elementType mem_block[n*m];
+        // TODO: Compare performance with: mutable elementType mem_block[n*m];
+        mutable elementType mem_block[n][m];
 
         inline elementType& operator ()(int i, int j) const
         {
-            return mem_block[i * m + j];
+            // TODO: Compare performance with: mem_block[i * m + j]
+            return mem_block[i][j];
         }
     };
 
