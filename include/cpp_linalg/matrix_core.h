@@ -6,6 +6,7 @@
 #define CPP_LINALG_CLA_MATRIX_CORE_H
 
 #include "mem_blocks.h"
+#include <cmath>
 
 namespace cla
 {
@@ -386,7 +387,20 @@ namespace cla
         return mat;
     }
 
-    // EXTRA FUNCTIONS
+    /////////////////////////////// EXTRA FUNCTIONS ///////////////////////////////
+    // INNER PRODUCTS
+    template<int n, class memBlockType, class otherMemBlockType>
+    typename memBlockType::element_type dot(Matrix<n, 1, memBlockType> &a, Matrix<n, 1, otherMemBlockType> &b)
+    {
+        typename memBlockType::element_type result = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            result += a(i, 0)*b(i, 0);
+        }
+        return result;
+    }
+
+    // SAXPY, GAXPY, ETC.
     template<int n, class memBlockType, class otherMemBlockType = memBlockType>
     Matrix<n, 1, memBlockType>& saxpy(Matrix<n, 1, memBlockType> &y,
                                      typename memBlockType::element_type a,
