@@ -20,9 +20,23 @@ namespace cla
         }
     };
 
+    template<class MatrixType>
+    struct ReferenceBlock
+    {
+        const MatrixType& referenced;
+
+        explicit ReferenceBlock(const MatrixType& mat) : referenced(mat){};
+        ReferenceBlock(const ReferenceBlock<MatrixType>& mat) : referenced(mat.referenced){};
+
+        inline typename MatrixType::elements::elementType& operator ()(int i, int j)
+        {
+            return referenced(i, j);
+        }
+    };
+
     // TODO: Test
     // TODO: Test whether getNumRows/Cols work, test whether matrix arithmetic work properly
-    // TODO: Separate from memblocks
+    // TODO: Separate from memblocks?
     template<class MatrixType>
     struct TransposeBlock
     {

@@ -16,8 +16,10 @@ namespace cla
         const static int rows = n;
         const static int cols = m;
         memBlockType elements;
+        //Matrix<m, n, TransposeBlock>
 
         // Constructors
+        Matrix<n, m, memBlockType>(){};
         // TODO: Make constructor given same type
         // TODO: Constructor given memory block
         // TODO: Constructor given array formatted data
