@@ -10,7 +10,7 @@
 
 namespace cla
 {
-    template<int n, int m, class memBlockType = DenseMatrixBlock<n, m, double> >
+    template<int n, int m, class memBlockType = DenseMatrixBlock<n, m, float> >
     struct Matrix
     {
         const static int rows = n;
