@@ -414,7 +414,7 @@ namespace cla
     }
 
     template<int n, int m, class memBlockType, class scalingMemBlockType, class otherMemBlockType>
-    Matrix<n, m, memBlockType>& gaxpy(Matrix<n, 1, memBlockType> &y,
+    Matrix<n, 1, memBlockType>& gaxpy(Matrix<n, 1, memBlockType> &y,
                                       Matrix<m, n, scalingMemBlockType> &A,
                                       Matrix<m, 1, otherMemBlockType> &x)
     {
