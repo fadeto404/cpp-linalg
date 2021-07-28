@@ -10,24 +10,30 @@
 
 namespace cla
 {
-    template<int n, int m, class memBlockType = DenseMatrixBlock<n, m, float> >
+    template<int n, int m, class memBlockType=DenseMatrixBlock<n, m, float> >
     struct Matrix
     {
         const static int rows = n;
         const static int cols = m;
         memBlockType elements;
-        //Matrix<m, n, TransposeBlock>
 
         // Constructors
         Matrix<n, m, memBlockType>(){};
-        // TODO: Make constructor given same type
-        // TODO: Constructor given memory block
-        // TODO: Constructor given array formatted data
+        Matrix<n, m, memBlockType>(memBlockType &mem_block) : elements(mem_block){};
+        Matrix<n, m, memBlockType>(typename memBlockType::element_type data[n][m]){*this = data;};
+        Matrix<n, m, memBlockType>(typename memBlockType::element_type data[n*m]){*this = data;};
+
+        // Code written by tomstewart89
+        template<typename ...ARGS> Matrix(ARGS... args) { FillRowMajor(args...); }
 
         // Assignment
         Matrix<n, m, memBlockType>& operator =(const Matrix<n, m, memBlockType>& mat);
         Matrix<n, m, memBlockType>& operator =(typename memBlockType::element_type data_array[n][m]);
-        Matrix<n, m, memBlockType>& operator =(const typename memBlockType::element_type & value);
+        Matrix<n, m, memBlockType>& operator =(const typename memBlockType::element_type& value);
+
+        // Code written by tomstewart89
+        template<typename ...TAIL> void FillRowMajor(typename memBlockType::element_type head, TAIL... tail);
+        void FillRowMajor() { }
 
         // Dimensions
         static const int getNumRows();
@@ -133,6 +139,15 @@ namespace cla
             }
         }
         return (*this);
+    }
+
+    // Code written by tomstewart89
+    template<int n, int m, class memBlockType>
+    template<typename... TAIL>
+    void Matrix<n, m, memBlockType>::FillRowMajor(typename memBlockType::element_type head, TAIL... tail) {
+        static_assert(rows*cols > sizeof...(TAIL), "Too many arguments passed to FillRowMajor");
+        (*this)((rows*cols - sizeof...(TAIL) - 1) / cols,(rows*cols - sizeof...(TAIL) - 1) % cols) = head;
+        FillRowMajor(tail...);
     }
 
     // ELEMENT ACCESS
@@ -262,7 +277,7 @@ namespace cla
         }
         return C;
     }
-    // TODO: Elementwise matrix multiplication ( C(i,j) = A(i,j) * B(i,j) )
+    // TODO: Elementwise matrix arithmetic ( C(i,j) = A(i,j) */+- B(i,j) )
 
     /////////////////////////////// MATRIX-SCALAR OPERATIONS ///////////////////////////////
     // MATRIX-SCALAR ADDITION
