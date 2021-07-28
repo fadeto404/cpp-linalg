@@ -1,7 +1,3 @@
-//
-// Created by rns on 6/17/21.
-//
-
 #ifndef CPP_LINALG_UTIL_H
 #define CPP_LINALG_UTIL_H
 

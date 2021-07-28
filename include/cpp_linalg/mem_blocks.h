@@ -1,7 +1,3 @@
-//
-// Created by rns on 6/13/21.
-//
-
 #ifndef CPP_LINALG_MEM_BLOCKS_H
 #define CPP_LINALG_MEM_BLOCKS_H
 

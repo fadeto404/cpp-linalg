@@ -1,7 +1,3 @@
-//
-// Created by rns on 6/13/21.
-//
-
 #ifndef CPP_LINALG_CLA_MATRIX_CORE_H
 #define CPP_LINALG_CLA_MATRIX_CORE_H
 
@@ -202,8 +198,8 @@ namespace cla
 
     template<int n, int m, class memBlockType, class otherMemBlockType, class resultMemBlockType>
     Matrix<n, m, resultMemBlockType>& add(const Matrix<n, m, memBlockType> &A,
-                                    const Matrix<n, m, otherMemBlockType> &B,
-                                    Matrix<n, m, resultMemBlockType> &C)
+                                          const Matrix<n, m, otherMemBlockType> &B,
+                                          Matrix<n, m, resultMemBlockType> &C)
     {
         for (int i = 0; i < n; ++i)
         {
@@ -236,8 +232,8 @@ namespace cla
 
     template<int n, int m, class memBlockType, class otherMemBlockType, class resultMemBlockType>
     Matrix<n, m, resultMemBlockType>& subtract(const Matrix<n, m, memBlockType> &A,
-                                    const Matrix<n, m, otherMemBlockType> &B,
-                                    Matrix<n, m, resultMemBlockType> &C)
+                                               const Matrix<n, m, otherMemBlockType> &B,
+                                               Matrix<n, m, resultMemBlockType> &C)
     {
         for (int i = 0; i < n; ++i)
         {
@@ -285,8 +281,8 @@ namespace cla
 
     template<int n, int m, int p, class memBlockType, class otherMemBlockType, class resultMemBlockType>
     Matrix<n, p, resultMemBlockType>& multiply(const Matrix<n, m, memBlockType> &A,
-                                         const Matrix<m, p, otherMemBlockType> &B,
-                                         Matrix<n, p, resultMemBlockType> &C)
+                                               const Matrix<m, p, otherMemBlockType> &B,
+                                               Matrix<n, p, resultMemBlockType> &C)
     {
         for (int i = 0; i < n; ++i)
         {
@@ -415,8 +411,8 @@ namespace cla
 
     template<int n, int m, class memBlockType>
     Matrix<n, m, memBlockType>& divide(Matrix<n, m, memBlockType> &mat,
-                                         const typename memBlockType::element_type &scalar,
-                                         Matrix<n, m, memBlockType> &ret_mat)
+                                       const typename memBlockType::element_type &scalar,
+                                       Matrix<n, m, memBlockType> &ret_mat)
     {
         for (int i = 0; i < n; ++i)
         {
