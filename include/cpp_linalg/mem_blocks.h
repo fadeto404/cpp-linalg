@@ -12,23 +12,24 @@ namespace cla
     struct DenseMatrixBlock
     {
         typedef elementType element_type;
-        mutable elementType mem_block[n][m];
+        mutable element_type mem_block[n][m];
 
-        inline elementType& operator ()(int i, int j) const
+        inline element_type& operator ()(int i, int j) const
         {
             return mem_block[i][j];
         }
     };
 
-    template<class MatrixType>
+    template<class memBlockType>
     struct ReferenceBlock
     {
-        const MatrixType& referenced;
+        typedef typename memBlockType::element_type element_type;
+        const memBlockType& referenced;
 
-        explicit ReferenceBlock(const MatrixType& mat) : referenced(mat){};
-        ReferenceBlock(const ReferenceBlock<MatrixType>& mat) : referenced(mat.referenced){};
+        explicit ReferenceBlock(const memBlockType& block) : referenced(block){};
+        ReferenceBlock(const ReferenceBlock<memBlockType>& copied) : referenced(copied.referenced){};
 
-        inline typename MatrixType::elements::elementType& operator ()(int i, int j)
+        inline element_type& operator ()(int i, int j)
         {
             return referenced(i, j);
         }
@@ -37,16 +38,17 @@ namespace cla
     // TODO: Test
     // TODO: Test whether getNumRows/Cols work, test whether matrix arithmetic work properly
     // TODO: Separate from memblocks?
-    template<class MatrixType>
+    template<class memBlockType>
     struct TransposeBlock
     {
-        const MatrixType original;
+        typedef typename memBlockType::element_type element_type;
+        const memBlockType original;
 
-        explicit TransposeBlock(const MatrixType& mat) : original(mat){};
-        // TODO: Read about copy constructors
-        TransposeBlock(const TransposeBlock<MatrixType>& mat) : original(mat.original){};
 
-        inline typename MatrixType::elements::elementType& operator ()(int i, int j)
+        explicit TransposeBlock(const memBlockType& block) : original(block){};
+        TransposeBlock(const TransposeBlock<memBlockType>& copied) : original(copied.original){};
+
+        inline element_type& operator ()(int& i, int& j) const
         {
             return original(j, i);
         }
@@ -65,7 +67,6 @@ namespace cla
     };
 
     // TODO: Make memory block layout types for the following types of matrices
-    // Square
     // Diagonal
     // Upper triangular
     // Lower triangular
