@@ -79,8 +79,32 @@ namespace cla
         Matrix<n, m, memBlockType>& operator /=(const typename memBlockType::element_type & scalar);
 
         // Transpose
-        // TODO: Implement transposition
+        Matrix<m, n, TransposeBlock<memBlockType> > T();
     };
+
+    // Matrix arithmetic functions
+    template<int n, int m, class memBlockType, class otherMemBlockType, class resultMemBlockType>
+    Matrix<n, m, resultMemBlockType>& add(const Matrix<n, m, memBlockType> &A,
+                                          const Matrix<n, m, otherMemBlockType> &B,
+                                          Matrix<n, m, resultMemBlockType> &C);
+
+    template<int n, int m, class memBlockType, class otherMemBlockType, class resultMemBlockType>
+    Matrix<n, m, resultMemBlockType>& subtract(const Matrix<n, m, memBlockType> &A,
+                                               const Matrix<n, m, otherMemBlockType> &B,
+                                               Matrix<n, m, resultMemBlockType> &C);
+
+    template<int n, int m, int p, class memBlockType, class otherMemBlockType, class resultMemBlockType>
+    Matrix<n, p, resultMemBlockType>& multiply(const Matrix<n, m, memBlockType> &A,
+                                               const Matrix<m, p, otherMemBlockType> &B,
+                                               Matrix<n, p, resultMemBlockType> &C);
+
+    template<int n, int m, class memBlockType>
+    Matrix<m, n, TransposeBlock<memBlockType> > transpose(Matrix<n, m, memBlockType> &mat);
+
+    template<int n, int m, class memBlockType>
+    Matrix<n, m, memBlockType> transpose(Matrix<m, n, TransposeBlock<memBlockType> > &transposed_mat);
+
+    /////// IMPLEMENTATIONS
 
     // DIMENSIONS
     template<int n, int m, class memBlockType>
@@ -402,6 +426,31 @@ namespace cla
             }
         }
         return mat;
+    }
+
+    ///////////////////////////////  TRANSPOSITION  ///////////////////////////////
+
+    // Member function transpose
+    template<int n, int m, class memBlockType>
+    Matrix<m, n, TransposeBlock<memBlockType> > Matrix<n, m, memBlockType>::T()
+    {
+        return transpose(*this);
+    }
+
+    template<int n, int m, class memBlockType>
+    Matrix<m, n, TransposeBlock<memBlockType> > transpose(Matrix<n, m, memBlockType> &mat)
+    {
+        TransposeBlock<memBlockType> t_blk(mat.elements);
+        Matrix<m, n, TransposeBlock<memBlockType> > t(t_blk);
+        return t;
+    }
+
+    template<int n, int m, class memBlockType>
+    Matrix<n, m, memBlockType> transpose(Matrix<m, n, TransposeBlock<memBlockType> > &transposed_mat)
+    {
+        memBlockType orig_blk(transposed_mat.elements);
+        Matrix<n, m, memBlockType> orig(orig_blk);
+        return orig;
     }
 
     /////////////////////////////// EXTRA FUNCTIONS ///////////////////////////////
