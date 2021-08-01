@@ -39,8 +39,9 @@ namespace cla
 
         // Element access
         typename memBlockType::element_type & operator()(int i, int j) const;
-        template<int startRow, int endRow, int startCol, int endCol>
-        Matrix<endRow-startRow, endCol-startCol, ReferenceBlock<memBlockType> > submatrix() const;
+
+        template<int firstRow, int lastRow, int firstCol, int lastCol>
+        Matrix<1 + lastRow - firstRow, 1 + lastCol - firstCol, ReferenceBlock<memBlockType> > submatrix() const;
 
         // Matrix addition
         template<class otherMemBlockType>
@@ -228,11 +229,11 @@ namespace cla
     }
 
     template<int n, int m, class memBlockType>
-    template<int startRow, int endRow, int startCol, int endCol>
-    Matrix<endRow - startRow, endCol - startCol, ReferenceBlock<memBlockType>> Matrix<n, m, memBlockType>::submatrix() const
+    template<int firstRow, int lastRow, int firstCol, int lastCol>
+    Matrix<1 + lastRow - firstRow, 1 + lastCol - firstCol, ReferenceBlock<memBlockType> > Matrix<n, m, memBlockType>::submatrix() const
     {
-        ReferenceBlock<memBlockType> ref_mem_block(elements, startRow, startCol);
-        return Matrix<endRow - startRow, endCol - startCol, ReferenceBlock<memBlockType> >(ref_mem_block);
+        ReferenceBlock<memBlockType> ref_mem_block(elements, firstRow, firstCol);
+        return  Matrix<1 + lastRow - firstRow, 1 + lastCol - firstCol, ReferenceBlock<memBlockType> >(ref_mem_block);
     }
 
     /////////////////////////////// MATRIX ARITHMETIC OPERATIONS ///////////////////////////////
