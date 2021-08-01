@@ -10,7 +10,7 @@ namespace cla
         typedef elementType element_type;
         mutable element_type mem_block[n][m];
 
-        inline element_type& operator ()(int i, int j) const
+        inline element_type& operator()(int i, int j) const
         {
             return mem_block[i][j];
         }
@@ -21,13 +21,18 @@ namespace cla
     {
         typedef typename memBlockType::element_type element_type;
         const memBlockType& referenced;
+        int row_offset, col_offset;
 
-        explicit ReferenceBlock(const memBlockType& block) : referenced(block){};
-        ReferenceBlock(const ReferenceBlock<memBlockType>& copied) : referenced(copied.referenced){};
+        ReferenceBlock(const memBlockType& block, int start_row=0, int start_col=0) : referenced(block),
+                                                                                      row_offset(start_row),
+                                                                                      col_offset(start_col){};
+        explicit ReferenceBlock(const ReferenceBlock<memBlockType>& copied) : referenced(copied.referenced),
+                                                                              row_offset(copied.row_offset),
+                                                                              col_offset(copied.col_offset){};
 
-        inline element_type& operator ()(int i, int j)
+        inline element_type& operator()(int i, int j) const
         {
-            return referenced(i, j);
+            return referenced(i+row_offset, j+col_offset);
         }
     };
 
@@ -44,7 +49,7 @@ namespace cla
         explicit TransposeBlock(const memBlockType& block) : original(block){};
         TransposeBlock(const TransposeBlock<memBlockType>& copied) : original(copied.original){};
 
-        inline element_type& operator ()(int& i, int& j) const
+        inline element_type& operator()(int i, int j) const
         {
             return original(j, i);
         }
@@ -56,7 +61,7 @@ namespace cla
     {
         static elementType elem = 0;
 
-        inline elementType& operator ()(int i, int j)
+        inline elementType& operator ()(int i, int j) const
         {
             return elem;
         }
